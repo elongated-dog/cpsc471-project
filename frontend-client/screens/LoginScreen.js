@@ -1,155 +1,121 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  Button,
-  StyleSheet,
-  Alert,
+import { 
+  View, 
+  Text, 
+  TextInput, 
+  Button, 
+  StyleSheet, 
+  Alert, 
   Image,
-  ScrollView,
+  Dimensions,
+  ScrollView
 } from 'react-native';
-
-
-const phoneWidth = 393;
-const phoneHeight = 852;
-
-import axios, { AxiosResponse } from 'axios';
-
-async function check_login(username, password) {
-  
-  console.log(username)
-  console.log(password)
-  
-  const { data } = await axios.post(
-    'http://localhost:8000/api/check_login/',
-    { username, password }
-  );
-
-  console.log(data); // log the parsed data object
-
-  console.log(data.isuser);
-  console.log(data.isadmin);
-
-  return data; 
-}
-
-
 
 export default function LoginScreen({ navigation }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = async () => {
+  const handleLogin = () => {
     if (!username.trim() || !password.trim()) {
       Alert.alert('Error', 'Please enter both username and password');
       return;
     }
-    setLoading(true);
 
-    try {
-      const { isuser, isadmin } = await check_login(username, password);
-      if (isuser) {
-        navigation.replace('Home');
+    setLoading(true);
+    // Simulate API call
+    setTimeout(() => {
+      setLoading(false);
+      if (username === 'admin' && password === '1234') {
+        navigation.navigate('Home');
       } else {
         Alert.alert('Login Failed', 'Invalid username or password');
       }
-    } catch (err) {
-      console.error(err);
-      Alert.alert('Error', 'Could not connect to server');
-    } finally {
-      setLoading(false);
-    }
-
+    }, 1500);
   };
 
   return (
-    <View style={styles.phoneFrame}>
-      <View style={styles.phoneScreen}>
-        <ScrollView
-          contentContainerStyle={styles.scrollContainer}
-          keyboardShouldPersistTaps="handled"
-        >
-          <Image
-            source={require('../assets/icon.png')}
-            style={styles.logo}
-            resizeMode="contain"
+    <ScrollView 
+      contentContainerStyle={styles.scrollContainer}
+      keyboardShouldPersistTaps="handled"
+    >
+      <View style={styles.phoneContainer}>
+        {/* App Logo */}
+        <Image
+          source={require('../assets/icon.png')} // NEEDS TO BE UPDATED TO CURRENT LOGO
+          style={styles.logo}
+          resizeMode="contain"
+        />
+        
+        <Text style={styles.title}>Login</Text>
+        
+        <TextInput
+          placeholder="Username"
+          style={styles.input}
+          value={username}
+          onChangeText={setUsername}
+          autoCapitalize="none"
+        />
+        
+        <TextInput
+          placeholder="Password"
+          style={styles.input}
+          secureTextEntry
+          value={password}
+          onChangeText={setPassword}
+        />
+        
+        <View style={styles.buttonContainer}>
+          <Button 
+            title="Login" 
+            onPress={handleLogin} 
+            disabled={loading}
           />
+        </View>
 
-          <Text style={styles.title}>Login</Text>
-
-          <TextInput
-            placeholder="Username"
-            style={styles.input}
-            value={username}
-            onChangeText={setUsername}
-            autoCapitalize="none"
-          />
-
-          <TextInput
-            placeholder="Password"
-            style={styles.input}
-            secureTextEntry
-            value={password}
-            onChangeText={setPassword}
-          />
-
-          <View style={styles.buttonContainer}>
-            <Button
-              title="Login"
-              onPress={handleLogin}
-              disabled={loading}
-            />
-          </View>
-
-          <View style={styles.linksContainer}>
-            <Text
-              style={styles.linkText}
-              onPress={() => navigation.navigate('ForgotPassword')}
-            >
-              Forgot Password?
-            </Text>
-
-            <Text
-              style={styles.linkText}
-              onPress={() => navigation.navigate('Register')}
-            >
-              Don't have an account? Sign Up
-            </Text>
-          </View>
-        </ScrollView>
+        <View style={styles.linksContainer}>
+          <Text 
+            style={styles.linkText}
+            onPress={() => navigation.navigate('ForgotPassword')}
+          >
+            Forgot Password?
+          </Text>
+          
+          <Text 
+            style={styles.linkText}
+            onPress={() => navigation.navigate('Register')}
+          >
+            Don't have an account? Sign Up
+          </Text>
+        </View>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
+const windowWidth = Dimensions.get('window').width;
+const phoneWidth = Math.min(windowWidth * 0.9, 400); // Max width 400px
+
 const styles = StyleSheet.create({
-  phoneFrame: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-  },
-  phoneScreen: {
-    width: phoneWidth,
-    height: phoneHeight,
-    backgroundColor: 'white',
-    borderRadius: 40,
-    overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.1,
-    shadowRadius: 20,
-    elevation: 10,
-    borderWidth: 1,
-    borderColor: '#e0e0e0',
-  },
   scrollContainer: {
     flexGrow: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f5f5f5',
+    paddingVertical: 20,
+  },
+  phoneContainer: {
+    width: phoneWidth,
+    backgroundColor: 'white',
+    borderRadius: 20,
     padding: 30,
-    justifyContent: 'center',  // or 'flex-start' if you want to start at top
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 5,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
   },
   logo: {
     width: '100%',
